@@ -16,12 +16,31 @@ cask "burndown" do
 
   app "Burndown.app"
 
-  # Releases are ad-hoc signed until a Developer ID certificate lands, so Gatekeeper would
-  # otherwise block the quarantined copy. Install with --no-quarantine, or right-click Open once.
+  # Releases are ad-hoc signed until a Developer ID certificate lands, so Gatekeeper blocks the
+  # quarantined copy. A cask cannot opt itself out of quarantine (there is no quarantine stanza
+  # in the Cask DSL), and Homebrew removed the --no-quarantine command-line flag, so the caveats
+  # below point at the routes that still work: the HOMEBREW_CASK_OPTS env var, xattr, System
+  # Settings, or building from source. Right-click > Open died in macOS 15 Sequoia.
   caveats <<~EOS
-    Burndown is ad-hoc signed for now. If macOS refuses to open it, either install with:
-      brew install --cask --no-quarantine maz0x/tap/burndown
-    or right-click Burndown.app in Applications, choose Open, then Open again.
+    Burndown is ad-hoc signed for now, so macOS quarantines the download and
+    Gatekeeper blocks the first open. Any one of these gets past it:
+
+      1. Clear the flag on the copy you just installed:
+           xattr -d com.apple.quarantine "#{appdir}/Burndown.app"
+
+      2. Or reinstall without the quarantine flag ever being attached:
+           brew uninstall --cask burndown
+           HOMEBREW_CASK_OPTS="--no-quarantine" brew install --cask maz0x/tap/burndown
+         Homebrew describes this as a Gatekeeper bypass that reduces system
+         security. It is your call: you are choosing to trust this build.
+
+      3. Or without the Terminal: try to open Burndown, let macOS block it, then
+         go to System Settings > Privacy & Security, scroll to Security, and
+         click "Open Anyway". That button only appears for about an hour after a
+         blocked launch. (macOS 15 removed the old right-click > Open shortcut.)
+
+      4. Or build from source instead. A locally built app is never quarantined:
+           git clone https://github.com/maz0x/burndown && cd burndown && ./build.sh
   EOS
 
   zap trash: [
