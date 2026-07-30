@@ -1,6 +1,6 @@
 cask "burndown" do
   version "0.9.1"
-  sha256 "74dca96e627ec8d351fa07c7f25eb52086a7d241857d5b7b61b7b79f93e40ada"
+  sha256 "025cf1986cadb25f4233500058a612847d09b6883da415bad39aaa9b52ef2b50"
 
   url "https://github.com/maz0x/burndown/releases/download/v#{version}/Burndown-#{version}.zip"
   name "Burndown"
