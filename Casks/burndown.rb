@@ -17,30 +17,29 @@ cask "burndown" do
   app "Burndown.app"
 
   # Releases are ad-hoc signed until a Developer ID certificate lands, so Gatekeeper blocks the
-  # quarantined copy. A cask cannot opt itself out of quarantine (there is no quarantine stanza
-  # in the Cask DSL), and Homebrew removed the --no-quarantine command-line flag, so the caveats
-  # below point at the routes that still work: the HOMEBREW_CASK_OPTS env var, xattr, System
-  # Settings, or building from source. Right-click > Open died in macOS 15 Sequoia.
+  # quarantined copy. Homebrew has removed quarantine skipping entirely (the --no-quarantine
+  # flag is gone and HOMEBREW_CASK_OPTS no longer carries it), so every install arrives
+  # quarantined and the caveats point at the routes that still work: xattr, System Settings,
+  # or building from source. Right-click > Open died in macOS 15 Sequoia.
   caveats <<~EOS
     Burndown is ad-hoc signed for now, so macOS quarantines the download and
     Gatekeeper blocks the first open. Any one of these gets past it:
 
-      1. Clear the flag on the copy you just installed:
+      1. Clear the flag on the copy you just installed (one command, once):
            xattr -d com.apple.quarantine "#{appdir}/Burndown.app"
+         (Homebrew has removed quarantine skipping entirely, so every brew
+         install arrives quarantined; this is the supported route.)
 
-      2. Or reinstall without the quarantine flag ever being attached:
-           brew uninstall --cask burndown
-           HOMEBREW_CASK_OPTS="--no-quarantine" brew install --cask maz0x/tap/burndown
-         Homebrew describes this as a Gatekeeper bypass that reduces system
-         security. It is your call: you are choosing to trust this build.
-
-      3. Or without the Terminal: try to open Burndown, let macOS block it, then
+      2. Or without the Terminal: try to open Burndown, let macOS block it, then
          go to System Settings > Privacy & Security, scroll to Security, and
          click "Open Anyway". That button only appears for about an hour after a
          blocked launch. (macOS 15 removed the old right-click > Open shortcut.)
 
-      4. Or build from source instead. A locally built app is never quarantined:
+      3. Or build from source instead. A locally built app is never quarantined:
            git clone https://github.com/maz0x/burndown && cd burndown && ./build.sh
+
+    What it reads and every host it can contact, with verification steps:
+    https://burndown-app.pages.dev/trust
   EOS
 
   zap trash: [
